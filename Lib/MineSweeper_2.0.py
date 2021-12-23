@@ -39,12 +39,7 @@ if __name__ == "__main__":
 
     def start(mineCount, boardSize):
         # TODO: play the actual game
-
-
-
         pass
-
-
 
     def settings():
         global boardSize, mineCount
