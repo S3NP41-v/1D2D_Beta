@@ -33,18 +33,29 @@ class MS2:
 if __name__ == "__main__":
     # sub-menus
         # settings
+    global boardSize, mineCount
     boardSize = (9, 9)
     mineCount = 10
 
     def start(mineCount, boardSize):
+        # TODO: play the actual game
+
+
+
         pass
 
+
+
     def settings():
+        global boardSize, mineCount
         subCursor = 0
+        print("\x1b[0;0H\x1b[J")
         while True:
-            for k, v in enumerate(["[  Board Size  ]", "[  Mine Count  ]", "[  Exit  ]"]):
+            print("\x1b[0;0H")
+            print("Choose settings, inputs have to be inside a specific range\nfor example you cant have more mines than spaces\nor you cant have negative or zero spaces\n")
+            for k, v in enumerate(["[  Board Size  ]", "[  Mine Count  ]", "[  Save & Exit ]"]):
                 if subCursor == k:
-                    print(fg([250, 250, 200]) + v + fg([255, 255, 240]))
+                    print(fg([250, 250, 0]) + v + fg([255, 255, 240]))
                 else:
                     print(v)
 
@@ -82,7 +93,7 @@ if __name__ == "__main__":
                         subCursor -= 1
 
             if inpt == b'\x03':
-                print("\x1b[0m\x1b[0;0H\x1b[J")
+                print("\x1b[0m\x1b[0;0H\x1b[J\x1b[?25h")
                 exit()
 
             if inpt == b'\x1b':
@@ -128,32 +139,29 @@ if __name__ == "__main__":
                         else:
                             break
 
-                elif subCursor == 3:
+                elif subCursor == 2:
                     return
 
     def about():
-        inpt = getch()
-        if inpt == b'\x03':
-            print("\x1b[0m\x1b[0;0H\x1b[J")
-            exit()
+        print("\x1b[0;0H\x1b[J")
+        while True:
+            print("\x1b[0;0H")
+            print("""
+            \r--Escape to return--
+            \r
+            \rInspired by the minesweeper, created using 1D2D library and ANSI codes
+            \rMade by S3NP41#8357, design help by F-32#6164 (discord tags)
+            \rGithub Page: https://github.com/S3NP41-v/1D2D_Beta/tree/c68b2fe7fd4284bded0d8bbfb484c2f9c33ed119/Lib
+            \rANSI codes cheat sheet help: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+            """)
 
-        if inpt == b'\x1b':
-            return
+            inpt = getch()
+            if inpt == b'\x03':
+                print("\x1b[0m\x1b[0;0H\x1b[J\x1b[?25h")
+                exit()
 
-        print("""
-        \rInspired by the minesweeper, created using 1D2D library 
-        \rMade by S3NP41#8357, design help by F-32#6164 (discord tags)
-        \rGithub Page: https://gist.github.com/S3NP41-v/bbeaa394b957465ea845e7f8878ef678
-        """)
-
-
-
-
-
-
-
-        pass
-
+            if inpt == b'\x1b':
+                return
 
 
     # Color functions
@@ -162,33 +170,37 @@ if __name__ == "__main__":
 
     # Main Menu:
 
-    # splash art
-    print("\x1b[0;0H\x1b[J")
-    print(f"""\r{fg([255, 255, 240])}{bg([0, 0, 0])}\r|  \     /  \|  \                     /      \ |  \                                                    
-              \r| $$\   /  $$ \$$ _______    ______  |  $$$$$$\| $$  ______    ______   _______    ______    ______    
-              \r| $$$\ /  $$$|  \|       \  /      \ | $$   \$$| $$ /      \  |      \ |       \  /      \  /      \   
-              \r| $$$$\  $$$$| $$| $$$$$$$\|  $$$$$$\| $$      | $$|  $$$$$$\  \$$$$$$\| $$$$$$$\|  $$$$$$\|  $$$$$$\  
-              \r| $$\$$ $$ $$| $$| $$  | $$| $$    $$| $$   __ | $$| $$    $$ /      $$| $$  | $$| $$    $$| $$   \$$  
-              \r| $$ \$$$| $$| $$| $$  | $$| $$$$$$$$| $$__/  \| $$| $$$$$$$$|  $$$$$$$| $$  | $$| $$$$$$$$| $$        
-              \r| $$  \$ | $$| $$| $$  | $$ \$$     \ \$$    $$| $$ \$$     \ \$$    $$| $$  | $$ \$$     \| $$        
-              \r \$$      \$$ \$$ \$$   \$$  \$$$$$$$  \$$$$$$  \$$  \$$$$$$$  \$$$$$$$ \$$   \$$  \$$$$$$$ \$$        \n\nuse arrow keys to select space to confirm, escape to return""")
-
     # menu cursor
     # it will keep the option we are selecting
     menuCursor = 0
 
     # main loop
     while True:
-        print("\x1b[12;0H")
-        for k, v in enumerate(["[  Start  ]", "[  Settings  ]", "[  About  ]", "[  Exit  ]"]):
+        print(f"{fg([255, 255, 240])}{bg([0, 0, 0])}")
+        print("\x1b[?25l\x1b[0;0H\x1b[J")
+        # splash art
+        print(f"""\r|  \     /  \|  \                     /      \ |  \                                                    
+                  \r| $$\   /  $$ \$$ _______    ______  |  $$$$$$\| $$  ______    ______   _______    ______    ______    
+                  \r| $$$\ /  $$$|  \|       \  /      \ | $$   \$$| $$ /      \  |      \ |       \  /      \  /      \   
+                  \r| $$$$\  $$$$| $$| $$$$$$$\|  $$$$$$\| $$      | $$|  $$$$$$\  \$$$$$$\| $$$$$$$\|  $$$$$$\|  $$$$$$\  
+                  \r| $$\$$ $$ $$| $$| $$  | $$| $$    $$| $$   __ | $$| $$    $$ /      $$| $$  | $$| $$    $$| $$   \$$  
+                  \r| $$ \$$$| $$| $$| $$  | $$| $$$$$$$$| $$__/  \| $$| $$$$$$$$|  $$$$$$$| $$  | $$| $$$$$$$$| $$        
+                  \r| $$  \$ | $$| $$| $$  | $$ \$$     \ \$$    $$| $$ \$$     \ \$$    $$| $$  | $$ \$$     \| $$        
+                  \r \$$      \$$ \$$ \$$   \$$  \$$$$$$$  \$$$$$$  \$$  \$$$$$$$  \$$$$$$$ \$$   \$$  \$$$$$$$ \$$        
+                  \r\nuse arrow keys to select, space to confirm, escape to return
+                  \rCurrent Settings:: board size: {boardSize}, mine count: {mineCount}\n""")
+
+        print("\x1b[13;0H")
+        for k, v in enumerate(["[    Start   ]", "[   Settings ]", "[    About   ]", "[    Exit    ]"]):
             if menuCursor == k:
-                print(fg([250, 250, 200]) + v + fg([255, 255, 240]))
+                print(fg([250, 250, 0]) + v + fg([255, 255, 240]))
             else:
                 print(v)
 
         inpt = getch()
 
         # input check
+        # Ctlr + C
         if inpt == b"\x03":
             print("\x1b[0m\x1b[0;0H\x1b[J")
             exit()
@@ -227,8 +239,19 @@ if __name__ == "__main__":
 
         if inpt == b' ':
             # todo: interact with the selected
-            pass
+            if menuCursor == 0:
+                # start game
+                start(mineCount, boardSize)
 
-        if inpt == b'\x1b':
-            # todo: return to previous
-            pass
+            elif menuCursor == 1:
+                # open setting sub-menu
+                settings()
+
+            elif menuCursor == 2:
+                # open about sub-menu
+                about()
+
+            elif menuCursor == 3:
+                # exit cleanly
+                print("\x1b[0m\x1b[0;0H\x1b[J\x1b[?25h")
+                exit()
