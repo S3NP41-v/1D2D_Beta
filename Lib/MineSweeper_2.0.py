@@ -29,6 +29,27 @@ class MS2:
 
         return surrounding
 
+    def printBoard(self, cursor: int) -> print:
+        colors = [[227, 234, 148], [255, 242, 0], [14, 209, 69], [196, 255, 14], [255, 127, 39], [236, 28, 36],
+                  [255, 174, 200], [255, 202, 24], [136, 0, 27]]
+        level = 0
+        print(f"{fg([200, 200, 150])}{bg([0, 0, 0])}")
+        for k, v in self.board.items():
+            if self.DD.get2D(k)[0] > level:
+                level = self.DD.get2D(k)[0]
+                print('\n', end='')
+
+            p = " □"
+            if v['flagged']:
+                p = fg([50, 50, 200]) + f" ⚐"
+
+            elif v['revealed']:
+                c = len(self.surroundingMines(k))
+                p = fg(colors[c]) + f" {c}"
+
+            print((bg([250, 250, 0]) if cursor == k else '') + p + "\x1b[0m" + bg([0, 0, 0]), end='')
+        print('\n')
+
     def touchingZeros(self, n: int) -> list:
         # if the position itself is a zero
         zeros = set()
@@ -64,31 +85,21 @@ if __name__ == "__main__":
     def start(mineCount, boardSize):
         print("\x1b[0;0H\x1b[J")
         ms = MS2(boardSize[0], boardSize[1])
-        colors = [[227, 234, 148], [255, 242, 0], [14, 209, 69], [196, 255, 14], [255, 127, 39], [236, 28, 36], [255, 174, 200], [255, 202, 24], [136, 0, 27]]
-        cursor = 0
 
+        time_start = time.time()
+        ms.scatterMines(mineCount)
+
+
+        cursor = 0
         # TODO: play the actual game
         # main loop
         while True:
-            print("\x1b[0;0H")
             # printing
-            level = 0
-            print(f"{fg([255, 255, 240])}{bg([0, 0, 0])}")
-            for k, v in ms.board.items():
-                if ms.DD.get2D(k)[0] > level:
-                    level = ms.DD.get2D(k)[0]
-                    print('\n', end='')
+            print("\x1b[0;0H")
+            print("use arrow keys to move, space to check selected, and 'f' to flag selected")
 
-                p = " □"
-                if v['flagged']:
-                    p = fg([50, 50, 200]) + f" ⚐"
 
-                elif v['revealed']:
-                    c = len(ms.surroundingMines(k))
-                    p = fg(colors[c]) + f" {c}"
-
-                print((bg([250, 250, 0]) if cursor == k else '') + p + "\x1b[0m" + bg([0, 0, 0]), end='')
-            print('\n')
+            # todo print class function here
 
             # input
             inpt = getch()
@@ -126,6 +137,8 @@ if __name__ == "__main__":
                     if cursor - 1 >= 0:
                         cursor -= 1
 
+            if inpt == b' ':
+                pass
 
 
     def settings():
