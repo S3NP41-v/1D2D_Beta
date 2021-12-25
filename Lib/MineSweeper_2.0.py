@@ -29,7 +29,7 @@ class MS2:
 
         return surrounding
 
-    def printBoard(self, cursor: int) -> print:
+    def printBoard(self, cursor: int, xray=False) -> print:
         fg = lambda c: f"\x1b[38;2;{str(c[0])};{str(c[1])};{str(c[2])}m"
         bg = lambda c: f"\x1b[48;2;{str(c[0])};{str(c[1])};{str(c[2])}m"
         colors = [[227, 234, 148], [255, 242, 0], [14, 209, 69], [196, 255, 14], [255, 127, 39], [236, 28, 36],
@@ -49,33 +49,39 @@ class MS2:
                 c = len(self.surroundingMines(k))
                 p = fg(colors[c]) + f" {c}"
 
-            print((bg([250, 250, 0]) if cursor == k else '') + p + "\x1b[0m" + bg([0, 0, 0]), end='')
+            if xray:
+                c = len(self.surroundingMines(k))
+                p = fg(colors[c]) + f" {c}"
+                if self.board[k]["mine"]:
+                    p = bg([255, 10, 10]) + p
+
+
+            print((bg([110, 110, 0]) if cursor == k and not xray else '') + p + "\x1b[0m" + bg([0, 0, 0]), end='')
         print('\n')
 
-    def touchingZeros(self, n: int) -> list:
-        # if the position itself is a zero
-        zeros = set()
-        if len(self.surroundingMines(n)) == 0:
-            zeros.add(n)
+    def touchingZeros(self, n: list(), skip=list(), first=True) -> list:
+        zeros = list()
+        isZero = lambda x: not self.surroundingMines(x)
 
-            tempZeros = []
-            temp = []
-            for i in self.DD.getSurrounding(n):
-                # if position is a 0
-                if not self.surroundingMines(i):
-                    tempZeros.append(i)
+        if first:
+            if isZero(n[0]):
+                zeros.append(n[0])
+            else:
+                return []
 
-            while tempZeros:
-                zeros.update(tempZeros)
-                for i in tempZeros:
-                    for i2 in self.DD.getSurrounding(i):
-                        if not self.surroundingMines(i2):
-                            temp.append(i2)
+        for i in n:
+            for i2 in self.DD.getSurrounding(i):
+                if i2 in skip:
+                    continue
 
-                tempZeros = temp
-                temp.clear()
+                if isZero(i2):
+                    zeros.append(i2)
+                    skip.append(i2)
 
-        return list(zeros)
+        if zeros:
+            return zeros + self.touchingZeros(zeros, skip, first=False)
+        else:
+            return []
 
 if __name__ == "__main__":
     # sub-menus
@@ -141,26 +147,31 @@ if __name__ == "__main__":
             # normal keyboard
             if inpt == b' ':
                 if not ms.board[cursor]["flagged"] or ms.board[cursor]["revealed"]:
-                    # lose
+                    # lose TODO, show the whole board
                     if ms.board[cursor]["mine"]:
                         time_end = time.time()
                         print("\x1b[0;0H\x1b[J")
-                        print(f"\n\n\t\t\tGame Over!\n\t\ttime: {str(time_end - time_start)[0:4]}\n\n\t\tPress anything to return to main menu")
+                        ms.printBoard(cursor, xray=True)
+                        print(f"\t\t\tGame Over!\n\t\ttime: {str(time_end - time_start)[0:4]}\n\n\t\tPress anything to return to main menu")
                         # just a second delay in case of accidental input
                         time.sleep(1)
                         getch()
                         return
 
-                    for i in ms.touchingZeros(cursor):
-                        for i2 in ms.DD.getSurrounding(i):
-                            ms.board[i2]["revealed"] = True
+                    if not ms.surroundingMines(cursor):
+                        for i in ms.touchingZeros([cursor]):
+                            for i2 in ms.DD.getSurrounding(i):
+                                ms.board[i2]["revealed"] = True
+                    else:
+                        ms.board[cursor]["revealed"] = True
 
                     # checking for win
-                    if not any(map(lambda a: a["revealed"] or a["mine"], ms.board.values())):
+                    if all(list(map(lambda x: x["revealed"] or x["mine"], ms.board.values()))):
                         # won
                         time_end = time.time()
                         print("\x1b[0;0H\x1b[J")
-                        print(f"\n\n\t\t\tCongratulations!\n\t\ttime: {str(time_end - time_start)[0:4]}\n\n\t\tPress anything to return to main menu")
+                        ms.printBoard(cursor, xray=True)
+                        print(f"\t\t\tCongratulations!\n\t\ttime: {str(time_end - time_start)[0:4]}\n\n\t\tPress anything to return to main menu")
                         # just a second delay in case of accidental input
                         time.sleep(1)
                         getch()
@@ -176,7 +187,7 @@ if __name__ == "__main__":
         subCursor = 0
         print("\x1b[0;0H\x1b[J")
         while True:
-            print("\x1b[0;0H")
+            print("\x1b[J\x1b[0;0H")
             print("Choose settings, inputs have to be inside a specific range\nfor example you cant have more mines than spaces\nor you cant have negative or zero spaces\n")
             for k, v in enumerate(["[  Board Size  ]", "[  Mine Count  ]", "[  Save & Exit ]"]):
                 if subCursor == k:
@@ -362,7 +373,6 @@ if __name__ == "__main__":
                     menuCursor -= 1
 
         if inpt == b' ':
-            # todo: interact with the selected
             if menuCursor == 0:
                 # start game
                 start(mineCount, boardSize)
