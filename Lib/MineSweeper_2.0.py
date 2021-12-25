@@ -1,6 +1,7 @@
 from main import IDIID
 from random import randint
 from msvcrt import getch
+from colorama import init
 import time
 
 
@@ -84,6 +85,7 @@ class MS2:
             return []
 
 if __name__ == "__main__":
+    init()
     # sub-menus
         # settings
     global boardSize, mineCount
