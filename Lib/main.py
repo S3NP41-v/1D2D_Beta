@@ -40,38 +40,67 @@ class IDIID:
         n = x + (y * self.sizeX)
         return n
 
-    def getSurrounding(self, n: int, size=1, warp=False):
+    def getSurrounding(self, n: int, size=1, warp=False) -> list:
         """
         :param n: 1D coordinate; point of origin
         :param size: size of ring; 1 = 3x3, 2 = 5x5 etc
         :param warp: ignore borders
         :return: surrounding positions
         """
+        if n not in self.board:
+            raise Exception("Position outside of board!")
 
-        start_pos = n - (size * self.sizeX) - (size * 1)
-        size = 2 * (size + 1) - 1
-        ring = [list(range(start_pos + (i * self.sizeX), start_pos + size + (i * self.sizeX))) for i in range(size)]
+        if size < 1:
+            raise Exception("Size cannot be smaller than 1!")
+
+        n2D = self.get2D(n)
+        # getting coordinates
+        smallest = (n2D[0] - (1 * size), n2D[1] - (1 * size))
+        largest = (n2D[0] + (1 * size), n2D[1] + (1 * size))
+        print(f"pre check:\n\tsmallest: {smallest, self.get1D(smallest)}\n\tlargest: {largest, self.get1D(largest)}")
+
+
+        # correcting
         if not warp:
-            _min = (self.sizeX * self.sizeY) - 1
-            _max = 0
+            # checking smallest
+            while self.get1D(smallest) not in self.board:
+                if self.get1D((smallest[0], smallest[1] + 1)) in self.board:
+                    smallest = (smallest[0], smallest[1] + 1)
+                    break
 
-            # getting max and low
-            for seg in ring[::-1]:
-                for n in seg:
-                    if 0 <= n < _min:
-                        _min = n
-                    if (self.sizeX * self.sizeY) - 1 >= n > _max:
-                        _max = n
+                elif self.get1D((smallest[0] + 1, smallest[1])) in self.board:
+                    smallest = (smallest[0] + 1, smallest[1])
+                    break
+                
+                else:
+                    smallest = (smallest[0] + 1, smallest[1] + 1)
 
-            _ring = set()
-            for seg in ring:
-                for n in seg:
-                    # if the x of n is in the square
-                    if self.get2D(_min)[1] <= self.get2D(n)[1] <= self.get2D(_max)[1]:
-                        # if the y of n is in the square
-                        if self.get2D(_min)[0] <= self.get2D(n)[0] <= self.get2D(_max)[0]:
-                            _ring.add(n)
-            ring = list(_ring)
+            # checking largest
+            while self.get1D(largest) not in self.board:
+                if self.get1D((largest[0], largest[1] - 1)) in self.board:
+                    largest = (largest[0], largest[1] - 1)
+                    break
+
+                elif self.get1D((largest[0] - 1, largest[1])) in self.board:
+                    largest = (largest[0] - 1, largest[1])
+                    break
+
+                else:
+                    largest = (largest[0] - 1, largest[1] - 1)
+
+        ring = []
+        for i in range(self.get1D(smallest), self.get1D(largest) + 1):
+            i2D = self.get2D(i)
+            print(f"checking i: {i}\ti2D: {i2D}\t\tagainst: {smallest}\t{largest}")
+
+
+            # 0 >= 0 and 0 >= 0
+            if i2D[0] >= smallest[0] and i2D[1] >= smallest[1]:  # if is in smallest range
+                print(f"passed {i}\t{i2D}")
+
+
+                if i2D[0] <= largest[0] and i2D[1] <= largest[1]:  # if is in largest range
+                    ring.append(i)
 
         return ring
 

@@ -30,6 +30,8 @@ class MS2:
         return surrounding
 
     def printBoard(self, cursor: int) -> print:
+        fg = lambda c: f"\x1b[38;2;{str(c[0])};{str(c[1])};{str(c[2])}m"
+        bg = lambda c: f"\x1b[48;2;{str(c[0])};{str(c[1])};{str(c[2])}m"
         colors = [[227, 234, 148], [255, 242, 0], [14, 209, 69], [196, 255, 14], [255, 127, 39], [236, 28, 36],
                   [255, 174, 200], [255, 202, 24], [136, 0, 27]]
         level = 0
@@ -97,9 +99,8 @@ if __name__ == "__main__":
             # printing
             print("\x1b[0;0H")
             print("use arrow keys to move, space to check selected, and 'f' to flag selected")
+            ms.printBoard(cursor)
 
-
-            # todo print class function here
 
             # input
             inpt = getch()
@@ -137,9 +138,38 @@ if __name__ == "__main__":
                     if cursor - 1 >= 0:
                         cursor -= 1
 
+            # normal keyboard
             if inpt == b' ':
-                pass
+                if not ms.board[cursor]["flagged"] or ms.board[cursor]["revealed"]:
+                    # lose
+                    if ms.board[cursor]["mine"]:
+                        time_end = time.time()
+                        print("\x1b[0;0H\x1b[J")
+                        print(f"\n\n\t\t\tGame Over!\n\t\ttime: {str(time_end - time_start)[0:4]}\n\n\t\tPress anything to return to main menu")
+                        # just a second delay in case of accidental input
+                        time.sleep(1)
+                        getch()
+                        return
 
+                    for i in ms.touchingZeros(cursor):
+                        for i2 in ms.DD.getSurrounding(i):
+                            ms.board[i2]["revealed"] = True
+
+                    # checking for win
+                    if not any(map(lambda a: a["revealed"] or a["mine"], ms.board.values())):
+                        # won
+                        time_end = time.time()
+                        print("\x1b[0;0H\x1b[J")
+                        print(f"\n\n\t\t\tCongratulations!\n\t\ttime: {str(time_end - time_start)[0:4]}\n\n\t\tPress anything to return to main menu")
+                        # just a second delay in case of accidental input
+                        time.sleep(1)
+                        getch()
+                        return
+
+            elif inpt == b'f':
+                # flag/un-flag position
+                if not ms.board[cursor]["revealed"]:
+                    ms.board[cursor]["flagged"] = not ms.board[cursor]["flagged"]
 
     def settings():
         global boardSize, mineCount
