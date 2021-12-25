@@ -57,8 +57,6 @@ class IDIID:
         # getting coordinates
         smallest = (n2D[0] - (1 * size), n2D[1] - (1 * size))
         largest = (n2D[0] + (1 * size), n2D[1] + (1 * size))
-        print(f"pre check:\n\tsmallest: {smallest, self.get1D(smallest)}\n\tlargest: {largest, self.get1D(largest)}")
-
 
         # correcting
         if not warp:
