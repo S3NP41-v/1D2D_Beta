@@ -91,14 +91,7 @@ class IDIID:
         ring = []
         for i in range(self.get1D(smallest), self.get1D(largest) + 1):
             i2D = self.get2D(i)
-            print(f"checking i: {i}\ti2D: {i2D}\t\tagainst: {smallest}\t{largest}")
-
-
-            # 0 >= 0 and 0 >= 0
             if i2D[0] >= smallest[0] and i2D[1] >= smallest[1]:  # if is in smallest range
-                print(f"passed {i}\t{i2D}")
-
-
                 if i2D[0] <= largest[0] and i2D[1] <= largest[1]:  # if is in largest range
                     ring.append(i)
 
