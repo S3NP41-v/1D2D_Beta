@@ -285,7 +285,7 @@ if __name__ == "__main__":
             \r
             \rInspired by the minesweeper, created using 1D2D library and ANSI codes
             \rMade by S3NP41#8357, design help by F-32#6164 (discord tags)
-            \rGithub Page: https://github.com/S3NP41-v/1D2D_Beta/tree/c68b2fe7fd4284bded0d8bbfb484c2f9c33ed119/Lib
+            \rGithub Page: https://github.com/S3NP41-v/1D2D_Beta
             \rANSI codes cheat sheet help: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
             """)
 
